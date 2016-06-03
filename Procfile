@@ -1,1 +1,1 @@
-lunchbot: bundle exec ruby lunchbot.rb
+web: bundle exec ruby lunchbot.rb
