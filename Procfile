@@ -1,2 +1,1 @@
-lunchbot: bundle exec ruby lunchbot.rb
-
+lunchbot: bundle exec ruby lunchbot/lunchbot.rb
