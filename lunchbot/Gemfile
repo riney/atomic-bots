@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem "slack-ruby-bot", git: "git@github.com:dblock/slack-ruby-bot.git"
+gem "slack-ruby-bot", git: "https://github.com/dblock/slack-ruby-bot.git"
 gem "celluloid-io"

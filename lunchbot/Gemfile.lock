@@ -1,6 +1,6 @@
 GIT
-  remote: git@github.com:dblock/slack-ruby-bot.git
-  revision: fe27b4c1e478af22cf6ac64b2b9c8741bfdb01c7
+  remote: https://github.com/dblock/slack-ruby-bot.git
+  revision: 1000343f73d0c9aa1a2be5b68d15ed64c572fcf8
   specs:
     slack-ruby-bot (0.8.1)
       activesupport
