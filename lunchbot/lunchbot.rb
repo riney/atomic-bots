@@ -1,3 +1,4 @@
+puts 'Lunchbot loading...'
 require 'json'
 require 'slack-ruby-bot'
 
