@@ -9,6 +9,7 @@ class LunchBot < SlackRubyBot::Bot
   end
 
   @@last_updated = nil
+  @@times_used = 0
 
   ICONMAP = {
     "http://legacy.cafebonappetit.com/assets/cor_icons/menu-item-type-43c4b7.png?v=1456809068": "S",
@@ -19,6 +20,8 @@ class LunchBot < SlackRubyBot::Bot
   }
 
   command "menu", "What's for lunch?", "what's for lunch?", "what's for lunch", "What's for lunch" do |client, data, match|
+    @@times_used += 1
+    
     if needs_refresh?
       client.say(text: "Let me fetch the latest menu...", channel: data.channel)
       refresh_menu
@@ -38,7 +41,9 @@ class LunchBot < SlackRubyBot::Bot
   end
 
   command "status" do |client, data, match|
-    response = "Last refreshed menu at #{@@last_updated || "never"}"
+    response = "Last refreshed menu at #{@@last_updated || "never"}\n"
+    response += "Accessed #{@@times_used} times since startup."
+
     client.say(text: response, channel: data.channel)
   end
 
