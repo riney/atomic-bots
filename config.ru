@@ -1,5 +1,5 @@
 require './server'
 
-run Sinatra::Application
+Thread.new { require './lunchbot' }
 
-require './lunchbot'
+run Sinatra::Application
