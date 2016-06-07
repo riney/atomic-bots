@@ -1,1 +1,1 @@
-lunchbot: bundle exec ruby lunchbot.rb
+web: bundle exec rackup config.ru -p $PORT

@@ -1,3 +1,4 @@
+require 'active_support/core_ext/date'
 require 'json'
 require 'slack-ruby-bot'
 
@@ -21,7 +22,7 @@ class LunchBot < SlackRubyBot::Bot
 
   command "menu", "What's for lunch?", "what's for lunch?", "what's for lunch", "What's for lunch" do |client, data, match|
     @@times_used += 1
-    
+
     if needs_refresh?
       client.say(text: "Let me fetch the latest menu...", channel: data.channel)
       refresh_menu
@@ -87,7 +88,7 @@ class LunchBot < SlackRubyBot::Bot
   end
 
   def self.needs_refresh?
-    @@last_updated.nil? or ((DateTime.now - @@last_updated) > 86400)
+    @@last_updated.nil? or (DateTime.now >= @@last_updated.tomorrow)
   end
 
   def self.describe_menu(menu)
