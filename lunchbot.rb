@@ -88,7 +88,7 @@ class LunchBot < SlackRubyBot::Bot
   end
 
   def self.needs_refresh?
-    @@last_updated.nil? or (DateTime.now >= @@last_updated.tomorrow)
+    @@last_updated.nil? or (DateTime.now >= @@last_updated.midnight.tomorrow)
   end
 
   def self.describe_menu(menu)
