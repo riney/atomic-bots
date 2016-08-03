@@ -72,9 +72,7 @@ class LunchBot < SlackRubyBot::Bot
   def self.refresh_menu
     @@last_updated = DateTime.now
     scraped_menu = JSON.parse Net::HTTP.get_response(URI.parse ENV["EXTRACTOR_URL"]).body
-    col1 = scraped_menu['extractorData']['data'][0]
-    col2 = scraped_menu['extractorData']['data'][1]
-    items = col1['group'] + col2['group']
+    items = scraped_menu['extractorData']['data'][0]['group']
     @@menu = items.collect do |item|
       {
         name: item['Item'].first['text'],
