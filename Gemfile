@@ -8,3 +8,4 @@ gem "celluloid-io"
 # for the web server part
 gem "sinatra"
 gem "thin"
+gem "pry"
