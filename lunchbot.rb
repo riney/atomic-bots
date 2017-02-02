@@ -28,7 +28,11 @@ class LunchBot < SlackRubyBot::Bot
       refresh_menu
     end
 
-    client.say(text: describe_menu(@@menu), channel: data.channel)
+    if @@today.saturday? || @@today.sunday?
+      client.say(text: "It's the weekend! No cafeteria food today.", channel: data.channel)
+    else
+      client.say(text: describe_menu(@@menu), channel: data.channel)
+    end
   end
 
   command "legend" do |client, data, match|
@@ -70,29 +74,38 @@ class LunchBot < SlackRubyBot::Bot
   end
 
   def self.refresh_menu
+    @@menu = []
     @@last_updated = DateTime.now
     scraped_menu = JSON.parse Net::HTTP.get_response(URI.parse ENV["EXTRACTOR_URL"]).body
-    items = scraped_menu['extractorData']['data'][0]['group']
-    @@menu = items.collect do |item|
-      {
-        name: item['Item'].first['text'],
-        price: item['Price'].first['text'],
-        description: item['Description'].first['text'],
-        attributes: (item['Attributes'] || {}).collect { |attr| ICONMAP[attr['src'].to_sym] }.join(", ")
-      }
+    if (scraped_menu['code'] == 1001)
+      SlackRubyBot::Client.logger.info "We've exceeded the maximum number of requests for the month. Sorry."
+    else
+      items = scraped_menu['extractorData']['data'][0]['group']
+      @@menu = items.collect do |item|
+        {
+          name: item['Item'].first['text'],
+          price: item['Price'].first['text'],
+          description: item['Description'].first['text'],
+          attributes: (item['Attributes'] || {}).collect { |attr| ICONMAP[attr['src'].to_sym] }.join(", ")
+        }
+      end
+      SlackRubyBot::Client.logger.info "Refreshed menu - got #{@@menu.size} items."
     end
-
-    SlackRubyBot::Client.logger.info "Refreshed menu - got #{@@menu.size} items."
   end
 
   def self.needs_refresh?
-    @@last_updated.nil? or (DateTime.now >= @@last_updated.midnight.tomorrow)
+    @@today = DateTime.now
+    @@last_updated.nil? || (@@today >= @@last_updated.midnight.tomorrow) && !@@today.saturday? && !@@today.sunday?
   end
 
   def self.describe_menu(menu)
-    response = "Today's menu for #{@@last_updated.strftime('%A, %d %b %Y')}\n\n"
-    menu.each do |item|
-      response << "*#{item[:name]}*#{item[:attributes].empty?? "" : " (" + item[:attributes] + ")"} #{item[:price]}\n_#{item[:description]}_\n\n"
+    if menu.empty?
+      response = "I'm sorry, I'm having trouble getting the menu today. Try again later, or visit the LDAC cafeteria web page at http://public-ldac.cafebonappetit.com/"
+    else
+      response = "Today's menu for #{@@last_updated.strftime('%A, %d %b %Y')}\n\n"
+      menu.each do |item|
+        response << "*#{item[:name]}*#{item[:attributes].empty?? "" : " (" + item[:attributes] + ")"} #{item[:price]}\n_#{item[:description]}_\n\n"
+      end
     end
 
     response
