@@ -9,3 +9,7 @@ gem "celluloid-io"
 gem "sinatra"
 gem "thin"
 gem "pry"
+
+
+# for the databasey part
+gem "pg"

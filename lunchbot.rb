@@ -1,5 +1,6 @@
 require 'active_support/core_ext/date'
 require 'json'
+require 'pg'
 require 'slack-ruby-bot'
 
 class LunchBot < SlackRubyBot::Bot
@@ -11,6 +12,7 @@ class LunchBot < SlackRubyBot::Bot
 
   @@last_updated = nil
   @@times_used = 0
+  @@db = nil
 
   ICONMAP = {
     "http://legacy.cafebonappetit.com/assets/cor_icons/menu-item-type-43c4b7.png?v=1456809068": "S",
@@ -109,6 +111,16 @@ class LunchBot < SlackRubyBot::Bot
     end
 
     response
+  end
+
+  def self.connect_db
+    SlackRubyBot::Client.logger.info "Connecting to db #{ENV['DATABASE_URL']}"
+    begin
+      @@db = PG::Connection.open(dbname: ENV['DATABASE_URL'])
+    rescue PG::Error
+      SlackRubyBot::Client.logger.error "Couldn't connect: #{$!}"
+    end
+    SlackRubyBot::Client.logger.info "Connected to db #{ENV['DATABASE_URL']}"
   end
 end
 
